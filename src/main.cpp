@@ -16,11 +16,11 @@ void setup()
   }
   Serial.println("LittleFS montado com sucesso");
 
-  // Configura o servidor
-  setupServer();
-
   // Configura o Wi-Fi e ESP-NOW
   inicializaWifi();
+
+  // Configura o servidor
+  setupServer();
 
   // Passa o WebSocket para o ESP-NOW
   //setWebSocket(&ws);
