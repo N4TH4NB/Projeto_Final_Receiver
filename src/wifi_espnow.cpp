@@ -1,8 +1,15 @@
 #include "wifi_espnow.h"
-#include "data_handler.h"
+#include <ArduinoJson.h>
 
 const char *ssid = "SSID";
 const char *password = "PASSWORD";
+struct_message myData;
+
+// Função para associar o WebSocket
+/*void setWebSocket(AsyncWebSocket *websocket)
+{
+  ws = websocket;
+}*/
 
 // Função de callback para receber dados
 void OnDataRecv(const uint8_t *mac, const uint8_t *incomingData, int len)
@@ -21,10 +28,27 @@ void OnDataRecv(const uint8_t *mac, const uint8_t *incomingData, int len)
   }
   Serial.println();
 
-  // Converte e exibe os dados como JSON
-  String jsonData = convertToJson();
-  Serial.println("Dados em JSON:");
-  Serial.println(jsonData);
+  // Envia os dados recebidos via WebSocket
+  // Envia para todos os clientes conectados
+  JsonDocument jsonDoc;
+  jsonDoc["Temperatura"] = myData.temp;
+  jsonDoc["Pressão"] = myData.press;
+  jsonDoc["Altitude"] = myData.alt;
+  jsonDoc["PressãoMar"] = myData.pressMar;
+  jsonDoc["Luminosidade"] = myData.lum;
+  jsonDoc["Tensão"] = myData.tensao;
+  jsonDoc["Chuva"] = myData.chuva;
+  jsonDoc["Hora"] = myData.hora;
+  jsonDoc["Longitude"] = myData.lon;
+  jsonDoc["Latitude"] = myData.lat;
+
+  size_t leng = measureJson(jsonDoc);
+  AsyncWebSocketMessageBuffer *buffer = ws.makeBuffer(leng); //  creates a buffer (len + 1) for you.
+  if (buffer)
+  {
+    serializeJson(jsonDoc, (char *)buffer->get(), leng + 1);
+      ws.textAll(buffer);
+  }
 }
 
 // Inicialização do Wi-Fi e ESP-NOW
