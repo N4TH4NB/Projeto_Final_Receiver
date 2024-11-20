@@ -31,16 +31,14 @@ void OnDataRecv(const uint8_t *mac, const uint8_t *incomingData, int len)
 
   // Envia os dados recebidos via WebSocket
   JsonDocument jsonDoc;
-  jsonDoc["Temperatura"] = myData.temp;
-  jsonDoc["Pressão"] = myData.press;
-  jsonDoc["Altitude"] = myData.alt;
-  jsonDoc["PressãoMar"] = myData.pressMar;
-  jsonDoc["Luminosidade"] = myData.lum;
-  jsonDoc["Tensão"] = myData.tensao;
-  jsonDoc["Chuva"] = myData.chuva;
-  jsonDoc["Hora"] = myData.hora;
-  jsonDoc["Longitude"] = myData.lon;
-  jsonDoc["Latitude"] = myData.lat;
+  jsonDoc["temp"] = myData.temp;
+  jsonDoc["press"] = myData.press;
+  jsonDoc["lum"] = myData.lum;
+  jsonDoc["tensao"] = myData.tensao;
+  jsonDoc["chuva"] = myData.chuva;
+  jsonDoc["hora"] = myData.hora;
+  jsonDoc["lon"] = myData.lon;
+  jsonDoc["lat"] = myData.lat;
 
   size_t leng = measureJson(jsonDoc);
   AsyncWebSocketMessageBuffer *buffer = ws.makeBuffer(leng); //  creates a buffer (len + 1) for you.
