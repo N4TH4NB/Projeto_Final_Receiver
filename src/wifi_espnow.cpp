@@ -47,28 +47,10 @@ void OnDataRecv(const uint8_t *mac, const uint8_t *incomingData, int len)
   if (buffer)
   {
     serializeJson(jsonDoc, (char *)buffer->get(), leng + 1);
-      ws.textAll(buffer);
+    serializeJson(jsonDoc, Serial);
+
+    ws.textAll(buffer);
   }
-  Serial.print("Temperatura = ");
-  Serial.print(myData.temp);
-  Serial.print(", Pressão = ");
-  Serial.print(myData.press);
-  Serial.print(", Altitude = ");
-  Serial.print(myData.alt);
-  Serial.print(", PressãoMar = ");
-  Serial.print(myData.pressMar);
-  Serial.print(", Luminosidade = ");
-  Serial.print(myData.lum);
-  Serial.print(", Tensão = ");
-  Serial.print(myData.tensao);
-  Serial.print(", Chuva = ");
-  Serial.print(myData.chuva);
-  Serial.print(", Hora = ");
-  Serial.print(myData.hora);
-  Serial.print(", Longitude = ");
-  Serial.print(myData.lon);
-  Serial.print(", Latitude = ");
-  Serial.println(myData.lat);
 }
 
 // Inicialização do Wi-Fi e ESP-NOW
