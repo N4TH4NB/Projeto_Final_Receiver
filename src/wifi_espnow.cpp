@@ -1,8 +1,9 @@
 #include "wifi_espnow.h"
+#include "wifi_cred.h"
 #include <ArduinoJson.h>
 
-const char *ssid = "SSID";
-const char *password = "PASSWORD";
+const char *ssid = WIFI_SSID;
+const char *password = WIFI_PASSWORD;
 struct_message myData;
 
 // Função para associar o WebSocket
@@ -29,7 +30,6 @@ void OnDataRecv(const uint8_t *mac, const uint8_t *incomingData, int len)
   Serial.println();
 
   // Envia os dados recebidos via WebSocket
-  // Envia para todos os clientes conectados
   JsonDocument jsonDoc;
   jsonDoc["Temperatura"] = myData.temp;
   jsonDoc["Pressão"] = myData.press;
@@ -49,6 +49,26 @@ void OnDataRecv(const uint8_t *mac, const uint8_t *incomingData, int len)
     serializeJson(jsonDoc, (char *)buffer->get(), leng + 1);
       ws.textAll(buffer);
   }
+  Serial.print("Temperatura = ");
+  Serial.print(myData.temp);
+  Serial.print(", Pressão = ");
+  Serial.print(myData.press);
+  Serial.print(", Altitude = ");
+  Serial.print(myData.alt);
+  Serial.print(", PressãoMar = ");
+  Serial.print(myData.pressMar);
+  Serial.print(", Luminosidade = ");
+  Serial.print(myData.lum);
+  Serial.print(", Tensão = ");
+  Serial.print(myData.tensao);
+  Serial.print(", Chuva = ");
+  Serial.print(myData.chuva);
+  Serial.print(", Hora = ");
+  Serial.print(myData.hora);
+  Serial.print(", Longitude = ");
+  Serial.print(myData.lon);
+  Serial.print(", Latitude = ");
+  Serial.println(myData.lat);
 }
 
 // Inicialização do Wi-Fi e ESP-NOW
