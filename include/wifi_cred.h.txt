@@ -1,0 +1,8 @@
+#ifndef WIFI_CRED_H
+#define WIFI_CRED_H
+
+// Defina suas credenciais de WiFi
+#define WIFI_SSID "*"
+#define WIFI_PASSWORD "*"
+
+#endif // WIFI_CRED_H
