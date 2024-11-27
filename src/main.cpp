@@ -19,13 +19,17 @@ typedef struct struct_message
     float temp;
     float press;
     float alt;
-    float pressMar;
     int lum;
     float tensao;
     int chuva;
     long lon;
     long lat;
-    char data[20];
+    unsigned short ano;
+    unsigned char mes;
+    unsigned char dia;
+    unsigned char hora;
+    unsigned char minuto;
+    unsigned char segundo;
 } struct_message;
 
 struct_message myData;
@@ -57,9 +61,14 @@ void sendDataWs()
     jsonDoc["lum"] = myData.lum;
     jsonDoc["tensao"] = myData.tensao;
     jsonDoc["chuva"] = myData.chuva;
-    jsonDoc["hora"] = myData.data;
     jsonDoc["lon"] = myData.lon;
     jsonDoc["lat"] = myData.lat;
+
+    char datetime[20];
+    snprintf(datetime, sizeof(datetime), "%02d-%02d-%04dT%02d:%02d:%02d",
+             myData.dia, myData.mes, myData.ano,
+             myData.hora, myData.minuto, myData.segundo);
+    jsonDoc["hora"] = datetime;
 
     // Serializa e envia os dados via WebSocket
     size_t lenJson = measureJson(jsonDoc);
@@ -157,5 +166,5 @@ void setup()
 // Função principal de loop
 void loop()
 {
-    //ws.cleanupClients();
+    ws.cleanupClients();
 }

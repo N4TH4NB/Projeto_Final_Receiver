@@ -5,18 +5,30 @@ let lat = -29.697573771794765
 let lng = -52.43576033878338
 let dataAtual = new Date()
 
+
+
+
+
+
+function map(value, inMin, inMax, outMin, outMax) {
+  return ((value - inMin) * (outMax - outMin)) / (inMax - inMin) + outMin;
+}
+
+
 function compararTemperatura(temperatura) {
   verificarNovoDia()
   if (tempMax === null || temperatura > tempMax) {
     tempMax = temperatura
-    document.getElementById("temp_max").textContent = temperatura
+    document.getElementById("temp_max").textContent = temperatura.toFixed(2);
   }
+
 
   if (tempMin === null || temperatura < tempMin) {
     tempMin = temperatura
-    document.getElementById("temp_min").textContent = temperatura
+    document.getElementById("temp_min").textContent = temperatura.toFixed(2);
   }
 }
+
 
 function verificarNovoDia() {
   const novaData = new Date()
@@ -27,6 +39,7 @@ function verificarNovoDia() {
   }
 }
 
+
 function initMap() {
   const mapOptions = {
     //pega o local baseado na latitude e longitude
@@ -35,9 +48,12 @@ function initMap() {
     disableDefaultUI: true,
   }
 
+
   const map = new google.maps.Map(document.getElementById("map"), mapOptions) //pega o mapa
 
+
   const geocoder = new google.maps.Geocoder() //usa outra API do google maps para pegar o nome
+
 
   // Função de geocodificação para obter o nome da cidade
   geocoder.geocode({ location: { lat, lng } }, (results, status) => {
@@ -52,6 +68,7 @@ function initMap() {
             ) => c.types.includes("administrative_area_level_2") //pega a area admistrativa2, que seria o nome da cidade
           )?.long_name || "Cidade não encontrada"
 
+
         // Adiciona marcador no mapa
         const marker = new google.maps.Marker({
           //adiciona o marcador
@@ -59,6 +76,7 @@ function initMap() {
           map: map,
           title: `${city}`,
         })
+
 
         // Atualiza o HTML com o nome da cidade e país
         document.getElementById("title").textContent = `${city}` //muda no html o nome
@@ -74,9 +92,11 @@ function initMap() {
   })
 }
 
+
 function updateWeatherIcon() {
   const currentHour = new Date().getHours() // Obtém a hora atual (0-23)
   const tempImg = document.getElementById("temp_img") // Obtém o elemento da imagem
+
 
   // Define o ícone com base na hora
   if (raining > 0) {
@@ -98,10 +118,12 @@ function updateWeatherIcon() {
   }
 }
 
+
 function updateBatteryIcon() {
   const batterySpan = document.getElementById("battery")
   const batteryIcon = document.getElementById("battery-icon")
   const batteryLevel = parseFloat(batterySpan.innerText)
+
 
   // Remove todas as classes relacionadas ao ícone da bateria
   batteryIcon.classList.remove(
@@ -111,6 +133,7 @@ function updateBatteryIcon() {
     "fa-battery-three-quarters",
     "fa-battery-full"
   )
+
 
   // Define a nova classe com base no nível de bateria
   if (batteryLevel >= 75) {
@@ -126,8 +149,10 @@ function updateBatteryIcon() {
   }
 }
 
+
 function formatDate() {
   const now = new Date()
+
 
   const options = {
     //pega a data do computador
@@ -138,6 +163,7 @@ function formatDate() {
     minute: "2-digit",
   }
 
+
   return now.toLocaleString("pt-BR", options) // Formato Brasil proprio do formatDate
 }
 function updateDateTime() {
@@ -146,63 +172,66 @@ function updateDateTime() {
   updateBatteryIcon() //chama para atulizar a battery
 }
 
+
 function toggleMode() {
   //toogle adiciona o dark theme se n possuir e tira se tiver
   const body = document.querySelector("body")
   body.classList.toggle("dark")
 }
 
+
 setInterval(updateDateTime, 10000) //loop de 10s para mudar o tempo e a bateria
 updateDateTime() //chamar uma vez para adicionar a img
+
 
 // Chama o mapa ao carregar a página
 window.onload = initMap
 
-const ws = new WebSocket(`ws://${window.location.hostname}/ws`);
+
+
 
 // Função para atualizar os elementos HTML
 function updateSensorData(data) {
-  document.getElementById("temp_value").textContent = data.temp.toFixed(2)
+  document.getElementById("temp_value").textContent = `${data.temp.toFixed(2)} °C`;
+
 
   compararTemperatura(data.temp)
 
-  document.getElementById("pressure").textContent = data.press.toFixed(2)
+
+  document.getElementById("pressure").textContent = `${data.press.toFixed(2)} atm`;
+
 
   let tensao = data.tensao.toFixed(2)
   porcentagem = map(tensao, 3.0, 5.0, 0, 100)
-  document.getElementById("battery").textContent = porcentagem
+  document.getElementById("battery").textContent = porcentagem.toFixed(2);
 
-  document.getElementById("lumi").textContent = data.lum.toFixed(2)
 
-  document.getElementById("raining").textContent = data.chuva.toFixed(2)
+  document.getElementById("lumi").textContent = `${data.lum.toFixed(2)} %`;
+
+
+  document.getElementById("raining").textContent = `${data.chuva.toFixed(2)} mm`;
   raining = data.chuva.toFixed(2)
-  lat = data.lat || "N/D"
-  lng = data.lon || "N/D"
+  lat = data.lat || lat;
+  lng = data.lon || lng;
   document.getElementById("last-att").textContent = data.hora
-  initMap(lat, lng)
+  initMap( )
 }
 
-// Evento quando a conexão é aberta
-socket.addEventListener("open", () => {
-  console.log("Conectado ao WebSocket!")
-})
+
+
+
+const ws = new WebSocket(`ws://${window.location.hostname}/ws`);
+
 
 // Evento para receber mensagens do servidor
-socket.addEventListener("message", (event) => {
+ws.addEventListener("open", () => console.log("Conexão WebSocket estabelecida!"));
+ws.addEventListener("message", (event) => {
   try {
-    const sensorData = JSON.parse(event.data.replace(/'/g, '"')) // Substitui aspas simples por duplas
-    updateSensorData(sensorData)
+      const data = JSON.parse(event.data.replace(/'/g, '"'));
+      updateSensorData(data);
   } catch (error) {
-    console.error("Erro ao processar os dados recebidos:", error)
+      console.error("Erro ao processar dados do WebSocket:", error);
   }
-})
-
-// Evento de erro
-socket.addEventListener("error", (error) => {
-  console.error("Erro no WebSocket:", error)
-})
-
-// Evento quando a conexão é encerrada
-socket.addEventListener("close", () => {
-  console.log("Conexão com WebSocket encerrada.")
-})
+});
+ws.addEventListener("close", () => console.log("Conexão WebSocket encerrada."));
+ws.addEventListener("error", (error) => console.error("Erro no WebSocket:", error));
