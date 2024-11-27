@@ -1,9 +1,13 @@
 #include <Arduino.h>
 #include <ESPAsyncWebServer.h>
 #include <ArduinoJson.h>
+#include <IOXhop_FirebaseESP32.h>
 #include <esp_now.h>
 #include "LittleFS.h"
 #include "wifi_cred.h"
+
+#define FIREBASE_HOST "https://projeto-final-4de38-default-rtdb.firebaseio.com/"    
+#define FIREBASE_AUTH "senha"
 
 // Definições de Wi-Fi
 const char *ssid = WIFI_SSID;
@@ -161,6 +165,7 @@ void setup()
     initFS();
     initWifi();
     initWeb();
+    Firebase.begin(FIREBASE_HOST, FIREBASE_AUTH);
 }
 
 // Função principal de loop
