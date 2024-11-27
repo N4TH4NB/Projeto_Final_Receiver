@@ -173,4 +173,30 @@ void loop()
         sendDataWs();
         previousMillis = millis();
     }
+    
+    //get
+//Serial.print(Firebase.getString("/sensores/altitude"));
+// Serial.print(Firebase.getString("/sensores/horário"));
+// Serial.print(Firebase.getString("/sensores/latitude"));
+// Serial.print(Firebase.getString("/sensores/longitude"));
+// Serial.print(Firebase.getString("/sensores/luminosidade"));
+// Serial.print(Firebase.getString("/sensores/pressão"));
+// Serial.print(Firebase.getString("/sensores/temperatura"));
+// Serial.print(Firebase.getString("/sensores/tensão"));
+
+    
+    //set
+Firebase.setString("/sensores/altitude");
+Firebase.setString("/sensores/horário");
+Firebase.setString("/sensores/latitude");
+Firebase.setString("/sensores/longitude");
+Firebase.setString("/sensores/luminosidade");
+Firebase.setString("/sensores/pressão");
+Firebase.setString("/sensores/temperatura");
+Firebase.setString("/sensores/tensão");
+
+    
+//push
+Firebase.pushString("/sensores/horário", "18:00");
+delay(3000);
 }
