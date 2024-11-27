@@ -8,6 +8,8 @@
 // Definições de Wi-Fi
 const char *ssid = WIFI_SSID;
 const char *password = WIFI_PASSWORD;
+const unsigned long intervaloEnvio = 1000;
+unsigned long previousMillis = millis();
 
 // Servidor e WebSocket
 AsyncWebServer server(80);
@@ -96,8 +98,6 @@ void OnDataRecv(const uint8_t *mac, const uint8_t *incomingData, int len)
             Serial.print(":");
     }
     Serial.println();
-
-    sendDataWs();
 }
 
 // Inicializa o sistema de arquivos
@@ -167,4 +167,10 @@ void setup()
 void loop()
 {
     ws.cleanupClients();
+
+    if (millis() - previousMillis >= intervaloEnvio)
+    {
+        sendDataWs();
+        previousMillis = millis();
+    }
 }
